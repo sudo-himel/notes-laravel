@@ -8,8 +8,8 @@
                     {{ Str::words($note->note, 50) }}
                 </div>
                 <div class="note-btns">
-                    <a href="" class="note-view-btn">View</a>
-                    <a href="" class="note-edit-btn">Edit</a>
+                    <a href="{{ route('note.show', $note) }}" class="note-view-btn">View</a>
+                    <a href="{{ route('note.edit', $note) }}" class="note-edit-btn">Edit</a>
                     <button class="note-delete-btn">Delete</button>
                 </div>
             </div>
