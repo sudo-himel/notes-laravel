@@ -12,9 +12,14 @@ class NoteController extends Controller
      */
     public function index()
     {
-        $notes = Note::query()->orderBy("created_at","desc")->paginate(15);
+        $notes = Note::query()
+            ->where("user_id", request()->user()->id)
+            ->orderBy('created_at', 'desc')
+            ->paginate(15);
+
         return view('note.index', ['notes' => $notes]);
     }
+
 
     /**
      * Show the form for creating a new resource.
@@ -30,11 +35,11 @@ class NoteController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'note' => ['required','string'],
+            'note' => ['required', 'string'],
         ]);
-        $data['user_id'] = 1;
+        $data['user_id'] = $request->user()->id;
         $note = Note::create($data);
-        return to_route('note.show', $note)->with('message','Note is created');
+        return to_route('note.show', $note)->with('message', 'Note is created');
     }
 
     /**
@@ -42,6 +47,9 @@ class NoteController extends Controller
      */
     public function show(Note $note)
     {
+        if(request()->user()->id != $note->user_id) {
+            abort(403);
+        };
         return view('note.show', ['note' => $note]);
     }
 
@@ -59,10 +67,10 @@ class NoteController extends Controller
     public function update(Request $request, Note $note)
     {
         $data = $request->validate([
-            'note' => ['required','string'],
+            'note' => ['required', 'string'],
         ]);
         $note->update($data);
-        return to_route('note.show', $note)->with('message','Note is updated');
+        return to_route('note.show', $note)->with('message', 'Note is updated');
     }
 
     /**
@@ -71,6 +79,6 @@ class NoteController extends Controller
     public function destroy(Note $note)
     {
         $note->delete();
-        return to_route('note.index')->with('message','Note Deleted Successfully');
+        return to_route('note.index')->with('message', 'Note Deleted Successfully');
     }
 }
