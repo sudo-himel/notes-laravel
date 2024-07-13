@@ -66,6 +66,9 @@ class NoteController extends Controller
      */
     public function update(Request $request, Note $note)
     {
+        if(request()->user()->id != $note->user_id) {
+            abort(403);
+        };
         $data = $request->validate([
             'note' => ['required', 'string'],
         ]);
@@ -78,6 +81,9 @@ class NoteController extends Controller
      */
     public function destroy(Note $note)
     {
+        if(request()->user()->id != $note->user_id) {
+            abort(403);
+        };
         $note->delete();
         return to_route('note.index')->with('message', 'Note Deleted Successfully');
     }
